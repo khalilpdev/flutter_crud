@@ -1,10 +1,18 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_crud/data/dummy_users.dart';
 import 'package:flutter_crud/models/user.dart';
+import 'package:http/http.dart' as http;
+
+/// aula de refencia
+/// https://youtu.be/Z-uJPNk0Moo
 
 class Users with ChangeNotifier {
+  static const _baseUrl =
+      'https://crud-teste-34564-default-rtdb.firebaseio.com/';
+
   final Map<String, User> _items = {...DUMMY_USERS};
 
   List<User> get all {
@@ -19,7 +27,8 @@ class Users with ChangeNotifier {
     return _items.values.elementAt(i);
   }
 
-  void put(User user) {
+  // adiciona ou altera um usuario
+  Future<void> put(User user) async {
     if (user == null) {
       return;
     }
@@ -36,7 +45,21 @@ class Users with ChangeNotifier {
                 avatarUrl: user.avatarUrl.trim(),
               ));
     } else {
-      final id = Random().nextDouble().toString();
+      var uri = Uri.parse("$_baseUrl/users.json");
+      print(uri);
+      final response = await http.post(uri,
+          body: json.encode(
+            {
+              'name': user.name,
+              'email': user.email,
+              'avatarUrl': user.avatarUrl
+            },
+          ));
+
+      final id = json.decode(response.body)['name'];
+      print(json.decode(response.body));
+
+      //final id = Random().nextDouble().toString();
       _items.putIfAbsent(
           id,
           () => User(
