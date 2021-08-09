@@ -20,6 +20,8 @@ class _UserFormState extends State<UserForm> {
     _formData['name'] = user.name;
     _formData['email'] = user.email;
     _formData['avatarUrl'] = user.avatarUrl;
+
+    print(user.name);
   }
 
   @override
@@ -29,7 +31,6 @@ class _UserFormState extends State<UserForm> {
     final User user = ModalRoute.of(context).settings.arguments;
 
     _loadFormData(user);
-    print(user.name);
   }
 
   @override
