@@ -41,11 +41,11 @@ class UserTile extends StatelessWidget {
                     title: Text('Excluir Usuário'),
                     content: Text('Tem certeza??'),
                     actions: [
-                      FlatButton(
+                      ElevatedButton(
                         onPressed: () => Navigator.of(context).pop(false),
                         child: Text('Não'),
                       ),
-                      FlatButton(
+                      ElevatedButton(
                         onPressed: () => Navigator.of(context).pop(true),
                         child: Text('Sim'),
                       ),

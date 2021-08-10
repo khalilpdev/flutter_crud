@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_crud/data/dummy_users.dart';
@@ -16,7 +15,19 @@ class Users with ChangeNotifier {
   final Map<String, User> _items = {...DUMMY_USERS};
 
   List<User> get all {
-    return [..._items.values];
+    List<User> users = [..._items.values];
+
+    // var uri = Uri.parse("$_baseUrl/users.json");
+    // var response = await http.get(uri);
+
+    // List<Users> fireBaseUsers = [];
+    // if (response.statusCode == 200) {
+    //   fireBaseUsers = json.decode(response.body);
+    // }
+
+    // users.addAll(fireBaseUsers);
+
+    return users;
   }
 
   int get count {
