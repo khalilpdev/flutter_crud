@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 
 /// aula de refencia
 /// https://youtu.be/Z-uJPNk0Moo
+/// https://youtu.be/Z-uJPNk0Moo?t=818
 
 class Users with ChangeNotifier {
   static const _baseUrl =
@@ -14,7 +15,7 @@ class Users with ChangeNotifier {
 
   final Map<String, User> _items = {...DUMMY_USERS};
 
-  List<User> get all {
+  Future<List<User>> get all async {
     List<User> users = [..._items.values];
 
     // var uri = Uri.parse("$_baseUrl/users.json");
@@ -22,10 +23,11 @@ class Users with ChangeNotifier {
 
     // List<Users> fireBaseUsers = [];
     // if (response.statusCode == 200) {
-    //   fireBaseUsers = json.decode(response.body);
+    //   print(response.body);
+    //   fireBaseUsers = jsonDecode(response.body) as List<Users>;
     // }
 
-    // users.addAll(fireBaseUsers);
+    //users.addAll(fireBaseUsers);
 
     return users;
   }
