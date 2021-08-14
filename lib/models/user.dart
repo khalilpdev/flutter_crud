@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 class User {
-  final String id;
+  String id;
   final String name;
   final String email;
   final String avatarUrl;
 
-  const User({
+  User({
     this.id,
     @required this.name,
     @required this.email,

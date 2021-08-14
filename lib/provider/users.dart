@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_crud/data/dummy_users.dart';
 import 'package:flutter_crud/models/user.dart';
 import 'package:http/http.dart' as http;
 
@@ -13,20 +12,20 @@ class Users with ChangeNotifier {
   static const _baseUrl =
       'https://crud-teste-34564-default-rtdb.firebaseio.com/';
 
-  final Map<String, User> _items = {...DUMMY_USERS};
+  final Map<String, User> _items = Map();
 
-  void get loadAllFromFirebase async {
+  void get loadFromFirebase async {
     var uri = Uri.parse("$_baseUrl/users.json");
 
     try {
       var response = await http.get(uri);
 
       if (response.statusCode == 200) {
-        print(response.body);
         var fireBaseUsers = jsonDecode(response.body) as Map<String, dynamic>;
 
         fireBaseUsers.forEach((key, value) {
           User user = User.fromMap(value);
+          user.id = key;
           _items.putIfAbsent(key, () => user);
         });
       } else {
@@ -40,33 +39,32 @@ class Users with ChangeNotifier {
   }
 
   int get count {
-    return _items.length;
+    return _items?.length;
   }
 
   User byIndex(int i) {
-    return _items.values.elementAt(i);
+    return _items?.values?.elementAt(i);
   }
 
-  // adiciona ou altera um usuario
   Future<void> put(User user) async {
     if (user == null) {
       return;
     }
 
-    if (user.id != null &&
-        user.id.trim().isNotEmpty &&
-        _items.containsKey(user.id)) {
-      _items.update(
-          user.id,
-          (_) => User(
-                id: user.id,
-                name: user.name.trim(),
-                email: user.email.trim(),
-                avatarUrl: user.avatarUrl.trim(),
-              ));
+    if (user.id != null) {
+      var uri = Uri.parse("$_baseUrl/users/${user.id}.json");
+      final response = await http.patch(uri,
+          body: json.encode(
+            {
+              'name': user.name.trim(),
+              'email': user.email.trim(),
+              'avatarUrl': user.avatarUrl.trim()
+            },
+          ));
+
+      print(json.decode(response.body));
     } else {
       var uri = Uri.parse("$_baseUrl/users.json");
-      print(uri);
       final response = await http.post(uri,
           body: json.encode(
             {
@@ -76,38 +74,36 @@ class Users with ChangeNotifier {
             },
           ));
 
-      final id = json.decode(response.body)['name'];
+      final newId = json.decode(response.body)['name'];
+      user.id = newId;
       print(json.decode(response.body));
-
-      //final id = Random().nextDouble().toString();
-      _items.putIfAbsent(
-          id,
-          () => User(
-                id: id,
-                name: user.name.trim(),
-                email: user.email.trim(),
-                avatarUrl: user.avatarUrl.trim(),
-              ));
     }
+
+    _items.putIfAbsent(
+        user.id,
+        () => User(
+              id: user.id,
+              name: user.name.trim(),
+              email: user.email.trim(),
+              avatarUrl: user.avatarUrl.trim(),
+            ));
 
     notifyListeners();
   }
 
   void remove(User user) async {
-    if (user != null && user.id != null) {
-      // nao tem o id preenchido*
-      var isFirebase = user.id.startsWith('-');
-      if (isFirebase) {
-        var uri = Uri.parse("$_baseUrl/users/${user.id}.json");
-        try {
-          await http.delete(uri);
-        } catch (e) {
-          print('Erro ao remover do firebase [$e]');
-        }
-      } else {
-        _items.remove(user.id);
-      }
+    if (user == null || user.id == null) {
+      return;
+    }
+
+    var uri = Uri.parse("$_baseUrl/users/${user.id}.json");
+    try {
+      await http.delete(uri);
+      _items.remove(user.id);
+
       notifyListeners();
+    } catch (e) {
+      print('Erro ao remover do firebase [$e]');
     }
   }
 }
