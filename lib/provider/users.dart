@@ -15,21 +15,28 @@ class Users with ChangeNotifier {
 
   final Map<String, User> _items = {...DUMMY_USERS};
 
-  Future<List<User>> get all async {
-    List<User> users = [..._items.values];
+  void get loadAllFromFirebase async {
+    var uri = Uri.parse("$_baseUrl/users.json");
 
-    // var uri = Uri.parse("$_baseUrl/users.json");
-    // var response = await http.get(uri);
+    try {
+      var response = await http.get(uri);
 
-    // List<Users> fireBaseUsers = [];
-    // if (response.statusCode == 200) {
-    //   print(response.body);
-    //   fireBaseUsers = jsonDecode(response.body) as List<Users>;
-    // }
+      if (response.statusCode == 200) {
+        print(response.body);
+        var fireBaseUsers = jsonDecode(response.body) as Map<String, dynamic>;
 
-    //users.addAll(fireBaseUsers);
+        fireBaseUsers.forEach((key, value) {
+          User user = User.fromMap(value);
+          _items.putIfAbsent(key, () => user);
+        });
+      } else {
+        print('Erro ao obter dados do firebase');
+      }
 
-    return users;
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
   }
 
   int get count {

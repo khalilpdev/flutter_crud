@@ -9,6 +9,7 @@ class Userlist extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Users users = Provider.of(context);
+    users.loadAllFromFirebase;
 
     return Scaffold(
       appBar: AppBar(

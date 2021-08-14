@@ -30,7 +30,6 @@ class _UserFormState extends State<UserForm> {
     super.didChangeDependencies();
 
     final User user = ModalRoute.of(context).settings.arguments;
-
     _loadFormData(user);
   }
 
