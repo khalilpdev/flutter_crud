@@ -93,9 +93,20 @@ class Users with ChangeNotifier {
     notifyListeners();
   }
 
-  void remove(User user) {
+  void remove(User user) async {
     if (user != null && user.id != null) {
-      _items.remove(user.id);
+      // nao tem o id preenchido*
+      var isFirebase = user.id.length > 5;
+      if (isFirebase) {
+        var uri = Uri.parse("$_baseUrl/users/${user.id}.json");
+        try {
+          await http.delete(uri);
+        } catch (e) {
+          print('Erro ao remover do firebase [$e]');
+        }
+      } else {
+        _items.remove(user.id);
+      }
       notifyListeners();
     }
   }
