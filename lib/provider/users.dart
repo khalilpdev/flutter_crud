@@ -96,7 +96,7 @@ class Users with ChangeNotifier {
   void remove(User user) async {
     if (user != null && user.id != null) {
       // nao tem o id preenchido*
-      var isFirebase = user.id.length > 5;
+      var isFirebase = user.id.startsWith('-');
       if (isFirebase) {
         var uri = Uri.parse("$_baseUrl/users/${user.id}.json");
         try {
